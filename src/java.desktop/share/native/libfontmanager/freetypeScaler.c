@@ -1711,8 +1711,12 @@ static jobject getGlyphGeneralPath(JNIEnv* env, jobject font2D,
     outline = getFTOutline(env, font2D, context, scalerInfo,
                            glyphCode, xpos, ypos);
 
-    if (outline == NULL || outline->n_points == 0) {
+    if (outline == NULL) {
         return gp;
+    } else if (outline->n_points == 0) {
+        return (*env)->NewObject(env,
+                                 sunFontIDs.gpClass,
+                                 sunFontIDs.gpCtrEmpty);
     }
 
     gpdata.pointTypes  = NULL;
@@ -1769,11 +1773,6 @@ Java_sun_font_FreetypeFontScaler_getGlyphOutlineNative(
                                glyphCode,
                                xpos,
                                ypos);
-    if (gp == NULL) { /* can be legal */
-        gp = (*env)->NewObject(env,
-                               sunFontIDs.gpClass,
-                               sunFontIDs.gpCtrEmpty);
-    }
     return gp;
 }
 
